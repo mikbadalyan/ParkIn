@@ -1,0 +1,26 @@
+﻿.available-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    right: 200px; /* Adjust the right margin as needed */
+    transform: translateY(-50%); /* Center vertically */
+    background-color: rgba(255, 255, 255, 0.8); /* White transparent background */
+    padding: 20px;
+    border-radius: 8px;
+    color: black; /* Black text color */
+    text-align: center; /* Center text inside the container */
+    width: 200px; /* Fixed width */
+}
+
+    .available-container h3 {
+        margin: 0;
+        font-size: 24px; /* Larger font size for the heading */
+    }
+
+    .available-container p {
+        margin: 0;
+        font-size: 18px; /* Font size for the paragraphs */
+    }

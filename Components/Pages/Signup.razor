@@ -1,0 +1,112 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using ParkIn.Data
+@inject ApplicationDbContext DbContext
+@rendermode InteractiveServer
+@page "/signup"
+@layout Components.Layout.SignupLayout
+
+<PageTitle>Sign Up</PageTitle>
+@* Include the reCAPTCHA script *@
+<!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
+<div class="signup-container">
+    <div class="signup-box">
+        <h2>Sign Up</h2>
+        <EditForm Model="@user" OnValidSubmit="HandleValidSubmit" FormName="signupForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <InputText id="firstName" @bind-Value="user.FirstName" class="form-control" />
+                <ValidationMessage For="@(() => user.FirstName)" />
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <InputText id="lastName" @bind-Value="user.LastName" class="form-control" />
+                <ValidationMessage For="@(() => user.LastName)" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <InputText id="email" @bind-Value="user.Email" type="email" class="form-control" />
+                <ValidationMessage For="@(() => user.Email)" />
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <InputText id="username" @bind-Value="user.Username" class="form-control" />
+                <ValidationMessage For="@(() => user.Username)" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <InputText id="password" @bind-Value="user.Password" type="password" class="form-control" />
+                <ValidationMessage For="@(() => user.Password)" />
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <InputText id="phoneNumber" @bind-Value="user.PhoneNumber" class="form-control" />
+                <ValidationMessage For="@(() => user.PhoneNumber)" />
+            </div>
+
+            <!-- <div class="form-group">
+                <label for="recaptcha">I am not a robot</label>
+                <div id="recaptcha" class="g-recaptcha" data-sitekey="6Lcbx4AqAAAAAK5ZYdd8xft4rVeA9-d-ojPSKx6J"></div>
+            </div> -->
+
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private UserModel user = new UserModel();
+
+    private async Task HandleValidSubmit()
+    {
+        var newUser = new YourEntity
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Username = user.Username,
+                Password = user.Password,
+                PhoneNumber = user.PhoneNumber,
+                PIN = GeneratePIN() // Generate a PIN
+            };
+
+        DbContext.YourEntities.Add(newUser);
+        await DbContext.SaveChangesAsync();
+    }
+    private int GeneratePIN()
+    {
+        // Implement your PIN generation logic here
+        return new Random().Next(1000, 9999);
+    }
+
+    public class UserModel
+    {
+        [Required(ErrorMessage = "First Name is required.")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Last Name is required.")]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email address.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Username is required.")]
+        public string Username { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Password is required.")]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
+        public string Password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Phone Number is required.")]
+        [Phone(ErrorMessage = "Invalid phone number.")]
+        public string PhoneNumber { get; set; } = string.Empty;
+    }
+}

@@ -1,0 +1,99 @@
+﻿.main-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-image: url('background.jpeg'); /* Add background image */
+    background-size: cover; /* Cover the entire area */
+    background-attachment: fixed; /* Fixed background */
+    background-position: center; /* Center the background */
+}
+
+header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.7); /* Same black transparent background */
+    height: 60px; /* Fixed height */
+}
+
+.logo {
+    margin-right: 20px;
+    margin-left: 200px; /* Move logo away from left edge */
+}
+
+    .logo img {
+        width: 100px; /* Adjust the width as needed */
+        height: auto; /* Maintain aspect ratio */
+    }
+
+.header-links {
+    margin-left: auto;
+    display: flex;
+    align-items: center; /* Align items to center */
+    gap: 20px; /* Space between links */
+    margin-right: 200px; /* Add 200px margin from right */
+}
+
+    .header-links a {
+        text-decoration: none;
+        color: white; /* Updated link color */
+        padding: 10px;
+        transition: color 0.3s ease; /* Smooth transition for color change */
+    }
+
+        .header-links a:hover {
+            color: #2596be; /* Change color on hover */
+        }
+
+    .header-links .active {
+        color: #2596be; /* Color for active link */
+    }
+
+.language-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+    .language-dropdown::after {
+        content: '▼'; /* Unicode character for down arrow */
+        color: white; /* White color for the arrow */
+        margin-left: -10px; /* Reduced space between text and arrow */
+    }
+
+.language-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7); /* Same black transparent background */
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+    .language-dropdown-content a {
+        color: white;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for background color and text color change */
+    }
+
+        .language-dropdown-content a:hover {
+            background-color: #2596be; /* Change background color on hover */
+            color: black; /* Change text color on hover */
+        }
+
+.language-dropdown:hover .language-dropdown-content {
+    display: block;
+}
+
+.language-dropdown img {
+    width: 20px;
+    height: auto;
+    margin-right: 8px;
+}
+
+main {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7); /* More black transparent background */
+}

@@ -1,0 +1,68 @@
+﻿.auth-container {
+    position: absolute;
+    top: 50%;
+    left: 200px; /* 200px margin from the left */
+    transform: translateY(-50%); /* Center vertically */
+    background-color: rgba(0, 0, 0, 0.7); /* Black transparent background */
+    padding: 20px;
+    border-radius: 8px;
+    color: white;
+    width: 350px; /* Increased width */
+    text-align: center; /* Center text inside the container */
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-input {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%; /* Make input boxes take full width */
+}
+
+.sign-in-button {
+    background-color: #2596be; /* Blue color */
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center the text horizontally */
+    align-items: center; /* Center the text vertically */
+}
+
+    .sign-in-button:hover {
+        background-color: #1e7ba8; /* Darker blue on hover */
+    }
+
+.sign-up-link {
+    color: white;
+    text-decoration: none;
+    font-size: 16px; /* Match the font size of the sign-in button */
+    text-align: center;
+    margin-top: 10px;
+}
+
+    .sign-up-link:hover {
+        color: #d3d3d3; /* Darken the white on hover */
+    }
+
+.forgot-password-link {
+    color: white;
+    text-decoration: underline;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+    .forgot-password-link:hover {
+        color: #d3d3d3; /* Darken the white on hover */
+    }
