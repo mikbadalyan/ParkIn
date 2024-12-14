@@ -26,7 +26,7 @@
 }
 
 .sign-in-button {
-    background-color: #2596be; /* Blue color */
+    background-color: #ccc786; /* Updated color */
     color: white;
     padding: 10px;
     border: none;
@@ -40,7 +40,7 @@
 }
 
     .sign-in-button:hover {
-        background-color: #1e7ba8; /* Darker blue on hover */
+        background-color: #b3a66a; /* Slightly darker shade for hover */
     }
 
 .sign-up-link {

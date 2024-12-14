@@ -10,6 +10,7 @@ namespace ParkIn.Data
         }
 
         // Define your DbSets (tables) here
-        public DbSet<YourEntity> YourEntities { get; set; }
+        public DbSet<UserSign> Usersigns { get; set; }
+        public DbSet<Reserve> Reserves { get; set; }
     }
 }

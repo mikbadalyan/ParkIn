@@ -1,0 +1,103 @@
+﻿@page "/qr-code"
+@using QRCoder
+@using Microsoft.EntityFrameworkCore
+@inject IWebHostEnvironment WebHostEnvironment
+@inject Data.ApplicationDbContext DbContext
+
+<h3>QR Code Generator</h3>
+
+<p>Generated QR Code (Updates Automatically Every 24 Hours):</p>
+
+@if (!string.IsNullOrEmpty(qrCodePng))
+{
+    <img src="data:image/png;base64,@qrCodePng" alt="QR Code" />
+}
+
+<p><b>Hex Code:</b> @hexCode</p>
+
+<p>Next update: @nextUpdateTime (refreshes automatically).</p>
+
+<button class="btn btn-primary" @onclick="() => GenerateQrCode()">Regenerate Now</button>
+
+@code {
+    private string? qrCodePng;  // QR code in Base64 to display
+    private string? hexCode;   // Hex code to display
+    private DateTime nextUpdateTime;  // Time for the next update
+    private System.Timers.Timer? updateTimer;  // Timer to trigger automatic updates
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Generate the QR code when the page loads
+        await GenerateQrCode(autoUpdate: true);
+
+        // Set up a timer to check for updates every minute (60000 ms)
+        updateTimer = new System.Timers.Timer(60000);
+        updateTimer.Elapsed += async (sender, e) => await CheckForUpdate();
+        updateTimer.Start();
+    }
+
+    private async Task CheckForUpdate()
+    {
+        // Check if it's time to regenerate the QR code
+        if (DateTime.UtcNow >= nextUpdateTime)
+        {
+            await GenerateQrCode(autoUpdate: true);
+            StateHasChanged(); // Refresh the UI after updating
+        }
+    }
+
+    private async Task GenerateQrCode(bool autoUpdate = false)
+    {
+        // Fetch the user from the database (replace with actual logic to fetch the user)
+        var user = await DbContext.Usersigns.FirstOrDefaultAsync();
+
+        if (user == null)
+        {
+            throw new InvalidOperationException("User not found.");
+        }
+
+        var username = user.Username;
+        var userId = user.Id.ToString();
+
+        // Combine username and ID into a unique data string
+        var data = $"{username}:{userId}:{DateTime.UtcNow.Date:yyyy-MM-dd}";
+
+        // Generate a unique hex code from the data
+        hexCode = BitConverter.ToString(System.Text.Encoding.UTF8.GetBytes(data)).Replace("-", "");
+
+        // Generate the QR code as a PNG
+        using var qrGenerator = new QRCodeGenerator();
+        var qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
+        using var qrCode = new PngByteQRCode(qrCodeData);
+        var qrCodeImage = qrCode.GetGraphic(20); // Generate the QR code as bytes
+
+        // Convert the QR code image to Base64 for display
+        qrCodePng = Convert.ToBase64String(qrCodeImage);
+
+        // Save the hex code to a file
+        var filePath = Path.Combine(WebHostEnvironment.WebRootPath, "GeneratedFiles", "QRCodeHex.txt");
+        Directory.CreateDirectory(Path.GetDirectoryName(filePath)!); // Ensure the folder exists
+        await File.WriteAllTextAsync(filePath, hexCode);
+
+        // Save the hex code to the database
+        user.QRCode = System.Text.Encoding.UTF8.GetBytes(hexCode);
+        DbContext.Usersigns.Update(user);
+        await DbContext.SaveChangesAsync();
+
+        // Calculate the next update time (24 hours from the last update)
+        nextUpdateTime = DateTime.UtcNow.Date.AddDays(1);
+
+        // Optional: Log file path or notify
+        if (!autoUpdate)
+        {
+            Console.WriteLine($"QR code regenerated and hex saved to: {filePath}");
+        }
+    }
+
+    public void Dispose()
+    {
+        // Stop and dispose of the timer when the component is disposed
+        updateTimer?.Stop();
+        updateTimer?.Dispose();
+    }
+}

@@ -1,0 +1,132 @@
+﻿@page "/account/{token}"
+@using Microsoft.EntityFrameworkCore
+@using System.ComponentModel.DataAnnotations
+@inject Data.ApplicationDbContext DbContext
+@inject NavigationManager NavigationManager
+@inject TokenService TokenService
+@inject ILogger<Account> Logger
+@layout Components.Layout.Accountlayout
+@rendermode InteractiveServer
+<PageTitle>User Account</PageTitle>
+
+@if (user == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="account-container">
+        <h2>Welcome, @user.FirstName @user.LastName</h2>
+        <p><strong>Email:</strong> @user.Email</p>
+        <p><strong>Username:</strong> @user.Username</p>
+        <p><strong>Phone Number:</strong> @user.PhoneNumber</p>
+        <p><strong>PIN:</strong> @user.PIN</p>
+
+        <h3>Add Car Details</h3>
+        <EditForm Model="@carDetails" OnValidSubmit="AddCarDetails">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="carBrand">Car Brand</label>
+                <InputSelect id="carBrand" @bind-Value="carDetails.CarBrand" class="form-control">
+                    <option value="">Select Car Brand</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Mercedes">Mercedes</option>
+                    <option value="Audi">Audi</option>
+                    <option value="Ford">Ford</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => carDetails.CarBrand)" />
+            </div>
+
+            <div class="form-group">
+                <label for="plateNumber">Plate Number</label>
+                <InputText id="plateNumber" @bind-Value="carDetails.PlateNumber" class="form-control" />
+                <ValidationMessage For="@(() => carDetails.PlateNumber)" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add New Car</button>
+        </EditForm>
+
+        @if (carDetailsAdded)
+        {
+            <div class="car-details">
+                <h3>Car Details</h3>
+                <p><strong>Car Brand:</strong> @carDetails.CarBrand</p>
+                <p><strong>Plate Number:</strong> @carDetails.PlateNumber</p>
+            </div>
+        }
+
+        <nav>
+            <ul>
+                <li><NavLink href="/reservation">Make a Reservation</NavLink></li>
+            </ul>
+        </nav>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? token { get; set; }
+
+    private UserSign? user;
+    private CarDetailsModel carDetails = new CarDetailsModel();
+    private bool carDetailsAdded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Logger.LogInformation("Decrypting token: {Token}", token);
+            var userId = int.Parse(TokenService.DecryptToken(token));
+            Logger.LogInformation("Decrypted user ID: {UserId}", userId);
+            user = await DbContext.Usersigns.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                Logger.LogWarning("User not found for ID: {UserId}", userId);
+                NavigationManager.NavigateTo("/signup");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during token decryption or user retrieval");
+            NavigationManager.NavigateTo("/signup");
+        }
+    }
+
+    private async Task AddCarDetails()
+    {
+        if (!IsValidPlateNumber(carDetails.PlateNumber))
+        {
+            Logger.LogWarning("Invalid Plate Number format: {PlateNumber}", carDetails.PlateNumber);
+            return;
+        }
+
+        if (user != null)
+        {
+            user.CarBrand = carDetails.CarBrand;
+            user.PlateNumber = carDetails.PlateNumber;
+
+            DbContext.Usersigns.Update(user);
+            await DbContext.SaveChangesAsync();
+
+            carDetailsAdded = true;
+        }
+    }
+
+    private bool IsValidPlateNumber(string plateNumber)
+    {
+        var regex = new System.Text.RegularExpressions.Regex(@"^\d{2}[A-Z]{2}\d{3}$|^\d{3}[A-Z]{2}\d{2}$");
+        return regex.IsMatch(plateNumber);
+    }
+
+    public class CarDetailsModel
+    {
+        [Required(ErrorMessage = "Car Brand is required.")]
+        public string? CarBrand { get; set; }
+
+        [Required(ErrorMessage = "Plate Number is required.")]
+        public string? PlateNumber { get; set; }
+    }
+}

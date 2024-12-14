@@ -1,0 +1,259 @@
+﻿@page "/reservation"
+@using System.ComponentModel.DataAnnotations
+@using ParkIn.Data
+@inject NavigationManager NavigationManager
+@inject ILogger<Reservation> Logger
+@inject Data.ApplicationDbContext DbContext
+@layout Components.Layout.Accountlayout
+@rendermode InteractiveServer
+
+<PageTitle>Reservation</PageTitle>
+
+<h3>Make a Reservation</h3>
+
+<EditForm Model="@reservationModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="date">Select Date and Time</label>
+        <div class="scrollable-picker-container">
+            <div class="scrollable-picker">
+                @foreach (var date in AvailableDates)
+                {
+                    <div class="@GetDateClass(date)" @onclick="() => SelectDate(date)">@date.ToString("MMM dd")</div>
+                }
+            </div>
+            <div class="scrollable-picker">
+                @foreach (var time in AvailableTimes)
+                {
+                    <div class="@GetTimeClass(time, true)" @onclick="() => SelectTime(time)">@time</div>
+                }
+            </div>
+            <div class="scrollable-picker">
+                @foreach (var time in AvailableTimes)
+                {
+                    <div class="@GetTimeClass(time, false)" @onclick="() => SelectEndTime(time)">@time</div>
+                }
+            </div>
+        </div>
+        <ValidationMessage For="@(() => reservationModel.Date)" />
+        <ValidationMessage For="@(() => reservationModel.Time)" />
+        <ValidationMessage For="@(() => reservationModel.EndTime)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Reserve</button>
+</EditForm>
+
+@if (reservationModel.Date != default && !string.IsNullOrEmpty(reservationModel.Time))
+
+{
+    <div class="selected-date-time">
+        <p>Selected Date: @reservationModel.Date.ToString("MMMM dd, yyyy")</p>
+        <p>Selected Time: @reservationModel.Time</p>
+    </div>
+}
+
+@code {
+    private ReservationModel reservationModel = new ReservationModel();
+
+    private List<DateTime> AvailableDates = new List<DateTime>();
+
+    private List<string> AvailableTimes = new List<string>();
+
+
+
+    protected override void OnInitialized()
+
+    {
+
+        GenerateAvailableDates();
+
+        GenerateAvailableTimes();
+
+    }
+
+
+
+    private void GenerateAvailableDates()
+
+    {
+
+        var startDate = DateTime.Now;
+
+        for (int i = 0; i < 30; i++)
+
+        {
+
+            AvailableDates.Add(startDate.AddDays(i));
+
+        }
+
+    }
+
+
+
+    private void GenerateAvailableTimes()
+
+    {
+
+        var startTime = new TimeSpan(0, 0, 0); // Start at 12:00 AM
+
+        var endTime = new TimeSpan(23, 55, 0); // End at 11:55 PM
+
+        var interval = new TimeSpan(0, 15, 0); // 15-minute intervals
+
+
+
+        for (var time = startTime; time <= endTime; time += interval)
+
+        {
+
+            AvailableTimes.Add(time.ToString(@"hh\:mm"));
+
+        }
+
+    }
+
+
+
+    private void SelectDate(DateTime date)
+
+    {
+
+        reservationModel.Date = date;
+
+    }
+
+
+
+    private void SelectTime(string time)
+
+    {
+
+        reservationModel.Time = time;
+
+    }
+
+
+
+    private void SelectEndTime(string time)
+
+    {
+
+        reservationModel.EndTime = time;
+
+    }
+
+
+
+    private string GetDateClass(DateTime date)
+
+    {
+
+        return date == reservationModel.Date ? "selected" : string.Empty;
+
+    }
+
+
+
+    private string GetTimeClass(string time, bool isStartTime)
+
+    {
+
+        if (isStartTime)
+
+        {
+
+            return time == reservationModel.Time ? "selected" : string.Empty;
+
+        }
+
+        else
+
+        {
+
+            return time == reservationModel.EndTime ? "selected" : string.Empty;
+
+        }
+
+    }
+
+
+
+    private async Task HandleValidSubmit()
+
+    {
+
+        try
+
+        {
+
+            var userId = 1; // Replace with actual user ID retrieval logic
+
+
+
+            var reservation = new Reserve
+
+                {
+
+                    UserId = userId,
+
+                    ReservationDate = reservationModel.Date,
+
+                    StartTime = TimeSpan.Parse(reservationModel.Time),
+
+                    EndTime = TimeSpan.Parse(reservationModel.EndTime),
+
+                    CreatedAt = DateTime.Now
+
+                };
+
+
+
+            DbContext.Reserves.Add(reservation);
+
+            await DbContext.SaveChangesAsync();
+
+
+
+            Logger.LogInformation("Reservation made for {Date} from {Time} to {EndTime}", reservationModel.Date, reservationModel.Time, reservationModel.EndTime);
+
+            NavigationManager.NavigateTo("/reservationsuccess");
+
+        }
+
+        catch (Exception ex)
+
+        {
+
+            Logger.LogError(ex, "Error making reservation");
+
+        }
+
+    }
+
+
+
+    public class ReservationModel
+
+    {
+
+        [Required(ErrorMessage = "Date is required.")]
+
+        public DateTime Date { get; set; }
+
+
+
+        [Required(ErrorMessage = "Start time is required.")]
+
+        public string Time { get; set; } = string.Empty;
+
+
+
+        [Required(ErrorMessage = "End time is required.")]
+
+        public string EndTime { get; set; } = string.Empty;
+
+    }
+}

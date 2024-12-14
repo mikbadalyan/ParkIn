@@ -9,22 +9,32 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+// Correctly chain the method
 
-// Configure Azure AD authentication
+// Configure database connection
 var connectionStringBuilder = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("DefaultConnection"))
 {
-    Authentication = SqlAuthenticationMethod.ActiveDirectoryDefault
+    TrustServerCertificate = true // Add this line to trust the server certificate
 };
-
-// Remove the password from the connection string
-connectionStringBuilder.Remove("User ID");
-connectionStringBuilder.Remove("Password");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionStringBuilder.ConnectionString,
         sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()));
 
 builder.Services.AddAuthorization(); // Add authorization services
+
+// Register EmailService
+builder.Services.AddSingleton<EmailService>();
+
+// Retrieve the encryption key from configuration
+var encryptionKey = builder.Configuration["TokenService:EncryptionKey"];
+if (string.IsNullOrEmpty(encryptionKey) || encryptionKey.Length != 32)
+{
+    throw new InvalidOperationException("Encryption key must be 32 characters long.");
+}
+
+// Register TokenService with the encryption key
+builder.Services.AddSingleton(new TokenService(encryptionKey));
 
 var app = builder.Build();
 

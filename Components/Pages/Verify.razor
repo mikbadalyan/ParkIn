@@ -1,0 +1,22 @@
+﻿@page "/verify"
+@using Microsoft.EntityFrameworkCore
+@inject Data.ApplicationDbContext DbContext
+@code {
+    [Parameter]
+    public string Code { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await DbContext.Usersigns.FirstOrDefaultAsync(u => u.VerificationCode == Code);
+        if (user != null)
+        {
+            user.IsVerified = true;
+            await DbContext.SaveChangesAsync();
+            // Display success message
+        }
+        else
+        {
+            // Display error message
+        }
+    }
+}

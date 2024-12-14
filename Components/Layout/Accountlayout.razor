@@ -1,0 +1,33 @@
+﻿@inherits LayoutComponentBase
+
+<div class="account-layout">
+    <div class="left-panel">
+        <a href="/home" class="icon-link">
+            <img src="home.png" alt="Home" class="icon" />
+            <span class="link-text">Home</span>
+        </a>
+        <a href="/reservation" class="icon-link">
+            <img src="reservation.png" alt="Reservation" class="icon" />
+            <span class="link-text">Reserve</span>
+        </a>
+        <a href="/qr-code" class="icon-link">
+            <img src="qr-code.png" alt="QR Code" class="icon" />
+            <span class="link-text">Qr-Code</span>
+        </a>
+        <a href="/question" class="icon-link">
+            <img src="question.png" alt="Question" class="icon" />
+            <span class="link-text">Help</span>
+        </a>
+        <a href="/settings" class="icon-link">
+            <img src="setting (1).png" alt="Settings" class="icon" />
+            <span class="link-text">Settings</span>
+        </a>
+    </div>
+    <div class="content">
+        @Body
+    </div>
+</div>
+
+@code {
+    // Add any necessary code for the layout here
+}

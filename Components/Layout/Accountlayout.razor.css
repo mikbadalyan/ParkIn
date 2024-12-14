@@ -1,0 +1,54 @@
+﻿.account-layout {
+    background-color: #ccc786; /* Set background color */
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    display: flex;
+    flex-direction: row; /* Change to row to accommodate the sidebar */
+}
+
+.content {
+    flex: 1; /* Take up remaining space */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.left-panel {
+    width: 200px; /* Set width for the sidebar */
+    background-color: #4c6060; /* Updated background color */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: white; /* Set text color to white */
+    border-radius: 0 20px 20px 0; /* Rounded corners for dynamic island effect */
+}
+
+.icon-link {
+    margin: 15px 0; /* Space between links */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    text-decoration: none; /* Remove underline from links */
+    color: white; /* Set link text color to white */
+    transition: background-color 0.3s ease;
+    padding: 10px;
+    border-radius: 10px; /* Rounded corners for link items */
+}
+
+    .icon-link:hover {
+        background-color: #3b4a4a; /* Darker background on hover */
+    }
+
+.icon {
+    width: 24px; /* Set icon size */
+    height: 24px; /* Set icon size */
+    margin-right: 10px; /* Space between icon and text */
+}
+
+.link-text {
+    font-size: 16px; /* Set text size */
+}

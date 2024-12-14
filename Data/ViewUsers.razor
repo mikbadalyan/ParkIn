@@ -45,7 +45,7 @@ else
 }
 
 @code {
-    private List<YourEntity> users;
+    private List<UserSign> users;
 
-    protected override async Task OnInitializedAsync() => users = await DbContext.YourEntities.ToListAsync();
+    protected override async Task OnInitializedAsync() => users = await DbContext.Usersigns.ToListAsync();
 }

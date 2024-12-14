@@ -1,16 +1,24 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Identity
 @using ParkIn.Data
 @inject ApplicationDbContext DbContext
+@inject EmailService EmailService
+@inject ILogger<Signup> Logger
+@inject NavigationManager NavigationManager
+@inject TokenService TokenService
 @rendermode InteractiveServer
 @page "/signup"
 @layout Components.Layout.SignupLayout
 
 <PageTitle>Sign Up</PageTitle>
-@* Include the reCAPTCHA script *@
-<!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
 <div class="signup-container">
     <div class="signup-box">
         <h2>Sign Up</h2>
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
         <EditForm Model="@user" OnValidSubmit="HandleValidSubmit" FormName="signupForm">
             <DataAnnotationsValidator />
             <ValidationSummary />
@@ -46,43 +54,148 @@
             </div>
 
             <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <InputText id="confirmPassword" @bind-Value="user.ConfirmPassword" type="password" class="form-control" />
+                <ValidationMessage For="@(() => user.ConfirmPassword)" />
+            </div>
+
+            <div class="form-group">
                 <label for="phoneNumber">Phone Number</label>
                 <InputText id="phoneNumber" @bind-Value="user.PhoneNumber" class="form-control" />
                 <ValidationMessage For="@(() => user.PhoneNumber)" />
             </div>
-
-            <!-- <div class="form-group">
-                <label for="recaptcha">I am not a robot</label>
-                <div id="recaptcha" class="g-recaptcha" data-sitekey="6Lcbx4AqAAAAAK5ZYdd8xft4rVeA9-d-ojPSKx6J"></div>
-            </div> -->
 
             <button type="submit" class="btn btn-primary">Sign Up</button>
         </EditForm>
     </div>
 </div>
 
+<!-- Modal for verification code -->
+@if (showVerificationModal)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enter Verification Code</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="verificationCode">Verification Code</label>
+                        <InputText id="verificationCode" @bind-Value="verificationCode" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick="VerifyCode">Verify</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private UserModel user = new UserModel();
+    private string errorMessage = string.Empty;
+    private bool showVerificationModal = false;
+    private string verificationCode = string.Empty;
+    private string generatedVerificationCode = string.Empty;
 
     private async Task HandleValidSubmit()
     {
-        var newUser = new YourEntity
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                Username = user.Username,
-                Password = user.Password,
-                PhoneNumber = user.PhoneNumber,
-                PIN = GeneratePIN() // Generate a PIN
-            };
+        try
+        {
+            // Check if the email already exists
+            var existingUserByEmail = await DbContext.Usersigns.FirstOrDefaultAsync(u => u.Email == user.Email);
 
-        DbContext.YourEntities.Add(newUser);
-        await DbContext.SaveChangesAsync();
+            if (existingUserByEmail != null)
+            {
+                errorMessage = "An account with this email already exists.";
+                return;
+            }
+
+            // Check if the username already exists
+            var existingUserByUsername = await DbContext.Usersigns.FirstOrDefaultAsync(u => u.Username == user.Username);
+
+            if (existingUserByUsername != null)
+            {
+                errorMessage = "An account with this username already exists.";
+                return;
+            }
+
+            // Check if the password and confirm password match
+            if (user.Password != user.ConfirmPassword)
+            {
+                errorMessage = "Passwords do not match.";
+                return;
+            }
+
+            var passwordHasher = new PasswordHasher<UserModel>();
+            var hashedPassword = passwordHasher.HashPassword(user, user.Password);
+
+            generatedVerificationCode = GenerateVerificationCode();
+            var pin = GeneratePIN();
+
+            var newUser = new UserSign
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Username = user.Username,
+                    Password = hashedPassword,
+                    PhoneNumber = user.PhoneNumber,
+                    PIN = pin,
+                    VerificationCode = generatedVerificationCode,
+                    IsVerified = false
+                };
+
+            DbContext.Usersigns.Add(newUser);
+            await DbContext.SaveChangesAsync();
+
+            // Send verification email
+            await EmailService.SendEmailAsync(user.Email, user.FirstName, user.LastName, user.Username, pin.ToString(), generatedVerificationCode);
+
+            Logger.LogInformation("Verification email sent to {Email}", user.Email);
+
+            // Show verification modal
+            showVerificationModal = true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during signup process");
+            errorMessage = "An error occurred while processing your request. Please try again later.";
+        }
     }
+
+    private async Task VerifyCode()
+    {
+        var user = await DbContext.Usersigns.FirstOrDefaultAsync(u => u.VerificationCode == verificationCode);
+        if (user != null)
+        {
+            user.IsVerified = true;
+            await DbContext.SaveChangesAsync();
+            showVerificationModal = false;
+            var token = TokenService.EncryptToken(user.Id.ToString());
+            NavigationManager.NavigateTo($"/account/{token}");
+        }
+        else
+        {
+            errorMessage = "Invalid verification code.";
+        }
+    }
+
+    private void CloseModal()
+    {
+        showVerificationModal = false;
+    }
+
+    private string GenerateVerificationCode()
+    {
+        return new Random().Next(100000, 999999).ToString();
+    }
+
     private int GeneratePIN()
     {
-        // Implement your PIN generation logic here
         return new Random().Next(1000, 9999);
     }
 
@@ -103,10 +216,52 @@
 
         [Required(ErrorMessage = "Password is required.")]
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
+        [StrongPassword]
         public string Password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Confirm Password is required.")]
+        [Compare("Password", ErrorMessage = "Passwords do not match.")]
+        public string ConfirmPassword { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Phone Number is required.")]
         [Phone(ErrorMessage = "Invalid phone number.")]
         public string PhoneNumber { get; set; } = string.Empty;
+
+        public string VerificationCode { get; set; } = string.Empty;
+        public bool IsVerified { get; set; } = false;
+    }
+
+    public class StrongPasswordAttribute : ValidationAttribute
+    {
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        {
+            var password = value as string;
+            if (string.IsNullOrEmpty(password))
+            {
+                return new ValidationResult("Password is required.");
+            }
+
+            if (password.Length < 8)
+            {
+                return new ValidationResult("Password must contain at least 8 characters.");
+            }
+
+            if (!password.Any(char.IsDigit))
+            {
+                return new ValidationResult("Password must contain at least one number.");
+            }
+
+            if (!password.Any(char.IsUpper))
+            {
+                return new ValidationResult("Password must contain at least one uppercase letter.");
+            }
+
+            if (!password.Any(char.IsLower))
+            {
+                return new ValidationResult("Password must contain at least one lowercase letter.");
+            }
+
+            return ValidationResult.Success;
+        }
     }
 }
