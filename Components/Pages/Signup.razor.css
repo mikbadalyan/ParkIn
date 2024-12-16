@@ -1,65 +1,63 @@
 ﻿.signup-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start; /* Align items to the start */
     align-items: center;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7); /* More black transparent background */
+    background-color: transparent; /* Remove black background */
+    color: white; /* Change text color to white */
+    margin-top: 20px; /* Adjust this value to move the form higher */
 }
 
-.signup-box {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    max-height: 80vh; /* Set a maximum height */
-    overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
-    overflow-x: hidden; /* Disable horizontal scrolling */
-}
-
-    /* Customize the scrollbar */
-    .signup-box::-webkit-scrollbar {
-        width: 8px; /* Set the width of the scrollbar */
-    }
-
-    .signup-box::-webkit-scrollbar-track {
-        background: #f1f1f1; /* Background of the scrollbar track */
-        border-radius: 10px; /* Rounded corners for the track */
-    }
-
-    .signup-box::-webkit-scrollbar-thumb {
-        background: #888; /* Color of the scrollbar thumb */
-        border-radius: 10px; /* Rounded corners for the thumb */
-    }
-
-        .signup-box::-webkit-scrollbar-thumb:hover {
-            background: #555; /* Color of the scrollbar thumb on hover */
-        }
-
-    .signup-box h2 {
+    .signup-container h2 {
         text-align: center;
         margin-bottom: 20px;
+        color: white; /* Change heading color to white */
     }
 
 .form-group {
     margin-bottom: 15px;
+    width: 300px; /* Set a fixed width for the form groups */
 }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
+.form-group-half {
+    display: flex;
+    justify-content: space-between;
+    width: 300px; /* Set a fixed width for the form groups */
+}
+
+    .form-group-half .form-group {
+        width: 48%; /* Set width to half of the parent container */
     }
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: white; /* Change label color to white */
+}
 
 .form-control {
     width: 100%;
-    padding: 8px;
+    height: 40px; /* Increase height to make inputs larger */
+    padding: 12px; /* Adjust padding as needed */
     box-sizing: border-box;
+    background-color: #333; /* Dark background for input */
+    color: white; /* Change input text color to white */
+    border: 1px solid #555; /* Dark border for input */
 }
+
+    .form-control::placeholder {
+        color: lightgrey; /* Change placeholder text color to light grey */
+    }
+
+    .form-control:focus::placeholder {
+        color: transparent; /* Remove placeholder text color when input is focused */
+    }
 
 .btn {
     width: 100%;
     padding: 10px;
-    background-color: #007bff;
+    background-color: #56b735; /* Change button background color */
     color: white;
     border: none;
     border-radius: 4px;
@@ -67,5 +65,22 @@
 }
 
     .btn:hover {
-        background-color: #0056b3;
+        background-color: #46962b; /* Darker green for hover state */
+    }
+
+.alert-danger {
+    color: white; /* Change alert text color to white */
+    background-color: #d9534f; /* Red background for alert */
+    border-color: #d43f3a; /* Darker red border for alert */
+}
+
+
+.form-group-half {
+    display: flex;
+    justify-content: space-between;
+    width: 300px; /* Set a fixed width for the form groups */
+}
+
+    .form-group-half .form-group {
+        width: 48%; /* Set width to half of the parent container */
     }

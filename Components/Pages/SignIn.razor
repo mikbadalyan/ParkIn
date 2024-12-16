@@ -1,0 +1,95 @@
+﻿@page "/signin"
+@layout Components.Layout.SignInLayout
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Identity
+@using ParkIn.Data
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavigationManager
+@inject ILogger<SignInPage> Logger
+@inject TokenService TokenService
+
+<PageTitle>Home</PageTitle>
+
+<div class="auth-container" style="background-color: transparent;">
+    <h1>Sign In</h1>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+    <EditForm Model="@signInModel" OnValidSubmit="HandleValidSubmit" FormName="signInForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="auth-form">
+            <div class="form-group">
+                <InputText id="identifier" @bind-Value="signInModel.Identifier" placeholder="Email/Username/Phone Number" class="auth-input form-control" />
+                <ValidationMessage For="@(() => signInModel.Identifier)" />
+            </div>
+
+            <div class="form-group">
+                <InputText id="password" @bind-Value="signInModel.Password" type="password" placeholder="Password" class="auth-input form-control" />
+                <ValidationMessage For="@(() => signInModel.Password)" />
+            </div>
+
+            <button type="submit" class="sign-in-button btn" style="background-color: #56b735; color: white;">Sign In</button>
+        </div>
+    </EditForm>
+    <a href="#" class="forgot-password-link">Forgot Password?</a>
+</div>
+
+<div class="image-container">
+    <img src="car.jpg" alt="Car Park" />
+</div>
+
+@code {
+    private SignInModel signInModel = new SignInModel();
+    private string errorMessage = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var user = await DbContext.Usersigns
+                .FirstOrDefaultAsync(u => u.Email == signInModel.Identifier || u.Username == signInModel.Identifier || u.PhoneNumber == signInModel.Identifier);
+
+            if (user == null)
+            {
+                errorMessage = "Invalid identifier or password.";
+                return;
+            }
+
+            var passwordHasher = new PasswordHasher<UserSign>();
+            var result = passwordHasher.VerifyHashedPassword(user, user.Password, signInModel.Password);
+
+            if (result == PasswordVerificationResult.Failed)
+            {
+                errorMessage = "Invalid identifier or password.";
+                return;
+            }
+
+            var token = TokenService.EncryptToken(user.Id.ToString());
+            NavigationManager.NavigateTo($"/account/{token}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during sign-in process");
+            errorMessage = "An error occurred while processing your request. Please try again later.";
+        }
+    }
+
+    public class SignInModel
+    {
+        [Required(ErrorMessage = "Identifier is required.")]
+        public string Identifier { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Password is required.")]
+        public string Password { get; set; } = string.Empty;
+    }
+
+    // Define the SignInPage class to avoid CS0246 error
+    public class SignInPage
+    {
+    }
+}

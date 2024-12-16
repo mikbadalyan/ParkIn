@@ -1,24 +1,27 @@
-﻿.main-layout {
+﻿body {
+    margin: 0; /* Remove any default margin */
+    font-family: 'Poppins', sans-serif; /* Apply Poppins font */
+}
+
+.main-layout {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-image: url('background.jpeg'); /* Add background image */
-    background-size: cover; /* Cover the entire area */
-    background-attachment: fixed; /* Fixed background */
-    background-position: center; /* Center the background */
+    background-color: #151a24; /* Changed background color */
 }
 
 header {
     display: flex;
     align-items: center;
     padding: 10px;
-    background-color: rgba(0, 0, 0, 0.7); /* Same black transparent background */
-    height: 60px; /* Fixed height */
+    background-color: #151a24; /* Changed background color */
+    height: 80px; /* Increased height */
 }
 
 .logo {
     margin-right: 20px;
     margin-left: 200px; /* Move logo away from left edge */
+    margin-top: 10px; /* Added margin top to lower the logo */
 }
 
     .logo img {
@@ -30,70 +33,73 @@ header {
     margin-left: auto;
     display: flex;
     align-items: center; /* Align items to center */
-    gap: 20px; /* Space between links */
+    gap: 42px; /* Space between links */
     margin-right: 200px; /* Add 200px margin from right */
+    margin-top: 10px; /* Added margin top to lower the nav links */
 }
 
     .header-links a {
         text-decoration: none;
         color: white; /* Updated link color */
         padding: 10px;
+        font-weight: bold; /* Make links bold */
         transition: color 0.3s ease; /* Smooth transition for color change */
     }
 
         .header-links a:hover {
-            color: #2596be; /* Change color on hover */
+            color: #56b735; /* Change color on hover */
         }
 
     .header-links .active {
-        color: #2596be; /* Color for active link */
+        color: #56b735; /* Color for active link */
     }
 
-.language-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-    .language-dropdown::after {
-        content: '▼'; /* Unicode character for down arrow */
-        color: white; /* White color for the arrow */
-        margin-left: -10px; /* Reduced space between text and arrow */
+    .header-links .signup-link {
+        background-color: white; /* White background color */
+        color: black; /* Black text color */
+        border-radius: 50px; /* More rounded corners */
+        padding: 10px 20px; /* Padding for the rectangle */
     }
 
-.language-dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: rgba(0, 0, 0, 0.7); /* Same black transparent background */
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-}
-
-    .language-dropdown-content a {
-        color: white;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for background color and text color change */
-    }
-
-        .language-dropdown-content a:hover {
-            background-color: #2596be; /* Change background color on hover */
-            color: black; /* Change text color on hover */
+        .header-links .signup-link:hover {
+            background-color: #f0f0f0; /* Slightly darker background on hover */
         }
-
-.language-dropdown:hover .language-dropdown-content {
-    display: block;
-}
-
-.language-dropdown img {
-    width: 20px;
-    height: auto;
-    margin-right: 8px;
-}
 
 main {
     flex-grow: 1;
     padding: 20px;
-    background-color: rgba(0, 0, 0, 0.7); /* More black transparent background */
+    background-color: #151a24; /* Changed background color */
 }
+
+.center-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 350px); /* Adjusted height to move text higher */
+    text-align: center;
+    font-size: 3.8rem; /* Adjust the size as needed */
+    color: white;
+    font-weight: bold; /* Make center text bold */
+    padding-top: 0; /* Remove padding to move text nearer to header */
+}
+
+    .center-text .easier-line {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 10px; /* Add margin to move lines closer */
+    }
+
+    .center-text .easier {
+        font-size: 5.2rem; /* Bigger size for EASIER */
+        color: #56b735; /* Color for EASIER */
+        margin-right: 10px; /* Add space between EASIER and THAN BEFORE */
+        font-weight: bold; /* Make EASIER bold */
+    }
+
+    .center-text .than-before {
+        font-size: 3.8rem; /* Same size as PARK YOUR CAR */
+        color: white;
+        font-weight: bold; /* Make THAN BEFORE bold */
+    }

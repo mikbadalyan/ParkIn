@@ -1,0 +1,105 @@
+﻿body {
+    margin: 0; /* Remove any default margin */
+    font-family: 'Poppins', sans-serif; /* Apply Poppins font */
+}
+
+.main-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #151a24; /* Changed background color */
+}
+
+header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #151a24; /* Changed background color */
+    height: 80px; /* Increased height */
+}
+
+.logo {
+    margin-right: 20px;
+    margin-left: 200px; /* Move logo away from left edge */
+    margin-top: 10px; /* Added margin top to lower the logo */
+}
+
+    .logo img {
+        width: 100px; /* Adjust the width as needed */
+        height: auto; /* Maintain aspect ratio */
+    }
+
+.header-links {
+    margin-left: auto;
+    display: flex;
+    align-items: center; /* Align items to center */
+    gap: 42px; /* Space between links */
+    margin-right: 200px; /* Add 200px margin from right */
+    margin-top: 10px; /* Added margin top to lower the nav links */
+}
+
+    .header-links a {
+        text-decoration: none;
+        color: white; /* Updated link color */
+        padding: 10px;
+        font-weight: bold; /* Make links bold */
+        transition: color 0.3s ease; /* Smooth transition for color change */
+    }
+
+        .header-links a:hover {
+            color: #56b735; /* Change color on hover */
+        }
+
+    .header-links .active {
+        color: #56b735; /* Color for active link */
+    }
+
+    .header-links .signup-link {
+        background-color: white; /* White background color */
+        color: black; /* Black text color */
+        border-radius: 50px; /* More rounded corners */
+        padding: 10px 20px; /* Padding for the rectangle */
+    }
+
+        .header-links .signup-link:hover {
+            background-color: #f0f0f0; /* Slightly darker background on hover */
+        }
+
+main {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #151a24; /* Changed background color */
+}
+
+.center-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 350px); /* Adjusted height to move text higher */
+    text-align: center;
+    font-size: 3.8rem; /* Adjust the size as needed */
+    color: white;
+    font-weight: bold; /* Make center text bold */
+    padding-top: 0; /* Remove padding to move text nearer to header */
+}
+
+    .center-text .easier-line {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 10px; /* Add margin to move lines closer */
+    }
+
+    .center-text .easier {
+        font-size: 5.2rem; /* Bigger size for EASIER */
+        color: #56b735; /* Color for EASIER */
+        margin-right: 10px; /* Add space between EASIER and THAN BEFORE */
+        font-weight: bold; /* Make EASIER bold */
+    }
+
+    .center-text .than-before {
+        font-size: 3.8rem; /* Same size as PARK YOUR CAR */
+        color: white;
+        font-weight: bold; /* Make THAN BEFORE bold */
+    }

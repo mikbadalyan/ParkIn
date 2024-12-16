@@ -1,33 +1,45 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="account-layout">
-    <div class="left-panel">
-        <a href="/home" class="icon-link">
-            <img src="home.png" alt="Home" class="icon" />
-            <span class="link-text">Home</span>
-        </a>
-        <a href="/reservation" class="icon-link">
-            <img src="reservation.png" alt="Reservation" class="icon" />
-            <span class="link-text">Reserve</span>
-        </a>
-        <a href="/qr-code" class="icon-link">
-            <img src="qr-code.png" alt="QR Code" class="icon" />
-            <span class="link-text">Qr-Code</span>
-        </a>
-        <a href="/question" class="icon-link">
-            <img src="question.png" alt="Question" class="icon" />
-            <span class="link-text">Help</span>
-        </a>
-        <a href="/settings" class="icon-link">
-            <img src="setting (1).png" alt="Settings" class="icon" />
-            <span class="link-text">Settings</span>
-        </a>
-    </div>
-    <div class="content">
-        @Body
-    </div>
+<div class="main-layout">
+    <header>
+        <div class="logo">
+            <a href="#">
+                <img src="parkin_white.png" alt="Logo" />
+            </a>
+        </div>
+        <div class="header-links">
+            <a href="@GetAccountUrl()">Home</a> <!-- Updated link to include token -->
+            <a href="/reserve">Reserve</a>
+            <a href="/faq">FAQ</a>
+            <div class="account-dropdown">
+                <img src="avatar.jpg" alt="Account" class="account-image" />
+                <div class="dropdown-content">
+                    <a href="@GetAccountUrl()">
+                        <img src="userk.png" alt="Account" class="dropdown-icon" /> Account
+                    </a>
+                    <a href="/settings">
+                        <img src="settings.png" alt="Settings" class="dropdown-icon" /> Settings
+                    </a>
+                    <a href="/help">
+                        <img src="help.png" alt="Help" class="dropdown-icon" /> Help
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="signup-container">
+            @Body
+        </div>
+    </main>
 </div>
 
 @code {
-    // Add any necessary code for the layout here
+    [Parameter]
+    public string? Token { get; set; }
+
+    private string GetAccountUrl()
+    {
+        return $"/account/{Token}";
+    }
 }

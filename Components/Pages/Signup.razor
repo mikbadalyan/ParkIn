@@ -13,62 +13,56 @@
 
 <PageTitle>Sign Up</PageTitle>
 <div class="signup-container">
-    <div class="signup-box">
-        <h2>Sign Up</h2>
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger">@errorMessage</div>
-        }
-        <EditForm Model="@user" OnValidSubmit="HandleValidSubmit" FormName="signupForm">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+    <h2>Sign Up</h2>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+    <EditForm Model="@user" OnValidSubmit="HandleValidSubmit" FormName="signupForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
+        <div class="form-group-half">
             <div class="form-group">
-                <label for="firstName">First Name</label>
-                <InputText id="firstName" @bind-Value="user.FirstName" class="form-control" />
+                <InputText id="firstName" @bind-Value="user.FirstName" class="form-control" placeholder="First Name" />
                 <ValidationMessage For="@(() => user.FirstName)" />
             </div>
 
             <div class="form-group">
-                <label for="lastName">Last Name</label>
-                <InputText id="lastName" @bind-Value="user.LastName" class="form-control" />
+                <InputText id="lastName" @bind-Value="user.LastName" class="form-control" placeholder="Last Name" />
                 <ValidationMessage For="@(() => user.LastName)" />
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <InputText id="email" @bind-Value="user.Email" type="email" class="form-control" />
-                <ValidationMessage For="@(() => user.Email)" />
-            </div>
+        <div class="form-group">
+            <InputText id="email" @bind-Value="user.Email" type="email" class="form-control" placeholder="Email" />
+            <ValidationMessage For="@(() => user.Email)" />
+        </div>
 
-            <div class="form-group">
-                <label for="username">Username</label>
-                <InputText id="username" @bind-Value="user.Username" class="form-control" />
-                <ValidationMessage For="@(() => user.Username)" />
-            </div>
+        <div class="form-group">
+            <InputText id="username" @bind-Value="user.Username" class="form-control" placeholder="Username" />
+            <ValidationMessage For="@(() => user.Username)" />
+        </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <InputText id="password" @bind-Value="user.Password" type="password" class="form-control" />
-                <ValidationMessage For="@(() => user.Password)" />
-            </div>
+        <div class="form-group">
+            <InputText id="password" @bind-Value="user.Password" type="password" class="form-control" placeholder="Password" />
+            <ValidationMessage For="@(() => user.Password)" />
+        </div>
 
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <InputText id="confirmPassword" @bind-Value="user.ConfirmPassword" type="password" class="form-control" />
-                <ValidationMessage For="@(() => user.ConfirmPassword)" />
-            </div>
+        <div class="form-group">
+            <InputText id="confirmPassword" @bind-Value="user.ConfirmPassword" type="password" class="form-control" placeholder="Confirm Password" />
+            <ValidationMessage For="@(() => user.ConfirmPassword)" />
+        </div>
 
-            <div class="form-group">
-                <label for="phoneNumber">Phone Number</label>
-                <InputText id="phoneNumber" @bind-Value="user.PhoneNumber" class="form-control" />
-                <ValidationMessage For="@(() => user.PhoneNumber)" />
-            </div>
+        <div class="form-group">
+            <InputText id="phoneNumber" @bind-Value="user.PhoneNumber" class="form-control" placeholder="Phone Number" />
+            <ValidationMessage For="@(() => user.PhoneNumber)" />
+        </div>
 
-            <button type="submit" class="btn btn-primary">Sign Up</button>
-        </EditForm>
-    </div>
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+    </EditForm>
 </div>
+
 
 <!-- Modal for verification code -->
 @if (showVerificationModal)
@@ -82,8 +76,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="verificationCode">Verification Code</label>
-                        <InputText id="verificationCode" @bind-Value="verificationCode" class="form-control" />
+                        <InputText id="verificationCode" @bind-Value="verificationCode" class="form-control" placeholder="Verification Code" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -265,3 +258,4 @@
         }
     }
 }
+

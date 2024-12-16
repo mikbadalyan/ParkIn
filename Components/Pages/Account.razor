@@ -1,62 +1,86 @@
 ﻿@page "/account/{token}"
 @using Microsoft.EntityFrameworkCore
 @using System.ComponentModel.DataAnnotations
+@using QRCoder
 @inject Data.ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager
 @inject TokenService TokenService
 @inject ILogger<Account> Logger
+@inject IWebHostEnvironment WebHostEnvironment
 @layout Components.Layout.Accountlayout
 @rendermode InteractiveServer
 <PageTitle>User Account</PageTitle>
 
 @if (user == null)
 {
-    <p><em>Loading...</em></p>
+    <p class="text-white"><em>Loading...</em></p>
 }
 else
 {
-    <div class="account-container">
-        <h2>Welcome, @user.FirstName @user.LastName</h2>
-        <p><strong>Email:</strong> @user.Email</p>
-        <p><strong>Username:</strong> @user.Username</p>
-        <p><strong>Phone Number:</strong> @user.PhoneNumber</p>
-        <p><strong>PIN:</strong> @user.PIN</p>
-
-        <h3>Add Car Details</h3>
-        <EditForm Model="@carDetails" OnValidSubmit="AddCarDetails">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <div class="form-group">
-                <label for="carBrand">Car Brand</label>
-                <InputSelect id="carBrand" @bind-Value="carDetails.CarBrand" class="form-control">
-                    <option value="">Select Car Brand</option>
-                    <option value="Toyota">Toyota</option>
-                    <option value="BMW">BMW</option>
-                    <option value="Mercedes">Mercedes</option>
-                    <option value="Audi">Audi</option>
-                    <option value="Ford">Ford</option>
-                </InputSelect>
-                <ValidationMessage For="@(() => carDetails.CarBrand)" />
+    <div class="account-container text-white">
+        <div class="user-info-container">
+            <div class="user-info">
+                <h2>Welcome, @user.FirstName @user.LastName</h2>
+                <p><strong>Email:</strong> @user.Email</p>
+                <p><strong>Username:</strong> @user.Username</p>
+                <p><strong>Phone Number:</strong> @user.PhoneNumber</p>
+                <p><strong>PIN:</strong> @user.PIN</p>
+                @if (!string.IsNullOrEmpty(user.CarBrand))
+                {
+                    <p><strong>Car Brand:</strong> @user.CarBrand</p>
+                }
+                @if (!string.IsNullOrEmpty(user.PlateNumber))
+                {
+                    <p><strong>Plate Number:</strong> @user.PlateNumber</p>
+                }
             </div>
 
-            <div class="form-group">
-                <label for="plateNumber">Plate Number</label>
-                <InputText id="plateNumber" @bind-Value="carDetails.PlateNumber" class="form-control" />
-                <ValidationMessage For="@(() => carDetails.PlateNumber)" />
+            <div class="qr-code-container">
+                @if (!string.IsNullOrEmpty(qrCodePng))
+                {
+                    <img src="data:image/png;base64,@qrCodePng" alt="QR Code" class="qr-code" />
+                }
+                <p>Please, scan QR code at the boom barrier of UFAR</p>
             </div>
+        </div>
 
-            <button type="submit" class="btn btn-primary">Add New Car</button>
-        </EditForm>
+        <div class="car-details-form">
+            <h3>Add Car Details</h3>
+            <EditForm Model="@carDetails" OnValidSubmit="AddCarDetails">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-        @if (carDetailsAdded)
-        {
-            <div class="car-details">
-                <h3>Car Details</h3>
-                <p><strong>Car Brand:</strong> @carDetails.CarBrand</p>
-                <p><strong>Plate Number:</strong> @carDetails.PlateNumber</p>
-            </div>
-        }
+                <div class="form-group">
+                    <label for="carBrand">Car Brand</label>
+                    <InputSelect id="carBrand" @bind-Value="carDetails.CarBrand" class="form-control">
+                        <option value="">Select Car Brand</option>
+                        <option value="Toyota">Toyota</option>
+                        <option value="BMW">BMW</option>
+                        <option value="Mercedes">Mercedes</option>
+                        <option value="Audi">Audi</option>
+                        <option value="Ford">Ford</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => carDetails.CarBrand)" />
+                </div>
+
+                <div class="form-group">
+                    <label for="plateNumber">Plate Number</label>
+                    <InputText id="plateNumber" @bind-Value="carDetails.PlateNumber" class="form-control" />
+                    <ValidationMessage For="@(() => carDetails.PlateNumber)" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add New Car</button>
+            </EditForm>
+
+            @if (carDetailsAdded)
+            {
+                <div class="car-details">
+                    <h3>Car Details</h3>
+                    <p><strong>Car Brand:</strong> @carDetails.CarBrand</p>
+                    <p><strong>Plate Number:</strong> @carDetails.PlateNumber</p>
+                </div>
+            }
+        </div>
 
         <nav>
             <ul>
@@ -73,6 +97,7 @@ else
     private UserSign? user;
     private CarDetailsModel carDetails = new CarDetailsModel();
     private bool carDetailsAdded = false;
+    private string? qrCodePng;  // QR code in Base64 to display
 
     protected override async Task OnInitializedAsync()
     {
@@ -86,6 +111,10 @@ else
             {
                 Logger.LogWarning("User not found for ID: {UserId}", userId);
                 NavigationManager.NavigateTo("/signup");
+            }
+            else
+            {
+                await GenerateQrCode();
             }
         }
         catch (Exception ex)
@@ -115,18 +144,39 @@ else
         }
     }
 
-    private bool IsValidPlateNumber(string plateNumber)
+    private async Task GenerateQrCode()
     {
-        var regex = new System.Text.RegularExpressions.Regex(@"^\d{2}[A-Z]{2}\d{3}$|^\d{3}[A-Z]{2}\d{2}$");
-        return regex.IsMatch(plateNumber);
+        if (user == null)
+        {
+            throw new InvalidOperationException("User not found.");
+        }
+
+        var username = user.Username;
+        var userId = user.Id.ToString();
+
+        // Combine username and ID into a unique data string
+        var data = $"{username}:{userId}";
+
+        using var qrGenerator = new QRCodeGenerator();
+        var qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
+        using var qrCode = new PngByteQRCode(qrCodeData);
+        var qrCodeBytes = qrCode.GetGraphic(20);
+
+        qrCodePng = Convert.ToBase64String(qrCodeBytes);
     }
 
-    public class CarDetailsModel
+    private bool IsValidPlateNumber(string plateNumber)
     {
-        [Required(ErrorMessage = "Car Brand is required.")]
-        public string? CarBrand { get; set; }
+        // Add your plate number validation logic here
+        return !string.IsNullOrEmpty(plateNumber);
+    }
 
-        [Required(ErrorMessage = "Plate Number is required.")]
-        public string? PlateNumber { get; set; }
+    private class CarDetailsModel
+    {
+        [Required]
+        public string CarBrand { get; set; } = string.Empty;
+
+        [Required]
+        public string PlateNumber { get; set; } = string.Empty;
     }
 }

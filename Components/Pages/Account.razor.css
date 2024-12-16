@@ -1,2 +1,38 @@
 ﻿body {
+    color: white;
+}
+
+.text-white {
+    color: white;
+}
+
+.qr-code {
+    width: 200px; /* Adjust the width as needed */
+    height: 200px; /* Adjust the height as needed */
+}
+
+.account-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-info-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.user-info {
+    flex: 1;
+    margin-left: 195px; /* Add margin-left to make it symmetric with the logo */
+}
+
+.qr-code-container {
+    margin-left: 20px;
+    margin-right: 190px; /* Add margin-right to make it symmetric */
+}
+
+.car-details-form {
+    margin-top: 20px;
 }
