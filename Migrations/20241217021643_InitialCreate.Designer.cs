@@ -12,15 +12,15 @@ using ParkIn.Data;
 namespace ParkIn.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241129093814_migggg")]
-    partial class migggg
+    [Migration("20241217021643_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
