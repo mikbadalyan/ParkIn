@@ -36,3 +36,7 @@
 .car-details-form {
     margin-top: 20px;
 }
+
+    .car-details-form .form-group .form-control {
+        width: 50px !important; /* Set a very small fixed width for the input fields */
+    }

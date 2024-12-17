@@ -84,7 +84,7 @@ else
 
         <nav>
             <ul>
-                <li><NavLink href="/reservation">Make a Reservation</NavLink></li>
+                <li><a @onclick="NavigateToReservation">Make a Reservation</a></li>
             </ul>
         </nav>
     </div>
@@ -169,6 +169,11 @@ else
     {
         // Add your plate number validation logic here
         return !string.IsNullOrEmpty(plateNumber);
+    }
+
+    private void NavigateToReservation()
+    {
+        NavigationManager.NavigateTo($"/reservation/{token}");
     }
 
     private class CarDetailsModel

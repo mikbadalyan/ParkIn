@@ -1,5 +1,6 @@
-﻿@page "/reservation"
+﻿@page "/reservation/{token}"
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.EntityFrameworkCore
 @using ParkIn.Data
 @inject NavigationManager NavigationManager
 @inject ILogger<Reservation> Logger
@@ -10,6 +11,18 @@
 <PageTitle>Reservation</PageTitle>
 
 <h3>Make a Reservation</h3>
+
+@if (!string.IsNullOrEmpty(token))
+
+{
+    <p>Token: @token</p> <!-- Display the token -->
+}
+
+else
+
+{
+    <p>No token provided.</p>
+}
 
 <EditForm Model="@reservationModel" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -31,7 +44,7 @@
                 }
             </div>
             <div class="scrollable-picker">
-                @foreach (var time in AvailableTimes)
+                @foreach (var time in AvailableEndTimes)
                 {
                     <div class="@GetTimeClass(time, false)" @onclick="() => SelectEndTime(time)">@time</div>
                 }
@@ -55,21 +68,41 @@
 }
 
 @code {
+    [Parameter]
+
+    public string? token { get; set; }
+
+
+
     private ReservationModel reservationModel = new ReservationModel();
 
     private List<DateTime> AvailableDates = new List<DateTime>();
 
     private List<string> AvailableTimes = new List<string>();
 
+    private List<string> AvailableEndTimes = new List<string>();
+
+    private List<Reserve> existingReservations = new List<Reserve>();
 
 
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
 
     {
 
+        await FetchExistingReservations();
+
         GenerateAvailableDates();
 
-        GenerateAvailableTimes();
+    }
+
+
+
+    private async Task FetchExistingReservations()
+
+    {
+
+        existingReservations = await DbContext.Reserves.ToListAsync();
 
     }
 
@@ -105,13 +138,59 @@
 
 
 
+        AvailableTimes.Clear();
+
+
+
         for (var time = startTime; time <= endTime; time += interval)
 
         {
 
-            AvailableTimes.Add(time.ToString(@"hh\:mm"));
+            if (!IsTimeWithinExistingReservations(time, reservationModel.Date))
+
+            {
+
+                AvailableTimes.Add(time.ToString(@"hh\:mm"));
+
+            }
 
         }
+
+    }
+
+
+
+    private bool IsTimeWithinExistingReservations(TimeSpan time, DateTime date)
+
+    {
+
+        int reservationCount = 0;
+
+        foreach (var reservation in existingReservations)
+
+        {
+
+            if (reservation.ReservationDate.Date == date.Date &&
+
+                time >= reservation.StartTime && time <= reservation.EndTime)
+
+            {
+
+                reservationCount++;
+
+                if (reservationCount >= 2)
+
+                {
+
+                    return true;
+
+                }
+
+            }
+
+        }
+
+        return false;
 
     }
 
@@ -123,6 +202,8 @@
 
         reservationModel.Date = date;
 
+        GenerateAvailableTimes();
+
     }
 
 
@@ -132,6 +213,44 @@
     {
 
         reservationModel.Time = time;
+
+        GenerateAvailableEndTimes();
+
+    }
+
+
+
+    private void GenerateAvailableEndTimes()
+
+    {
+
+        var selectedStartTime = TimeSpan.Parse(reservationModel.Time);
+
+        AvailableEndTimes.Clear();
+
+
+
+        var endTime = new TimeSpan(23, 55, 0); // End at 11:55 PM
+
+        var interval = new TimeSpan(0, 15, 0); // 15-minute intervals
+
+
+
+        for (var time = selectedStartTime + interval; time <= endTime; time += interval)
+
+        {
+
+            if (IsTimeWithinExistingReservations(time, reservationModel.Date))
+
+            {
+
+                break;
+
+            }
+
+            AvailableEndTimes.Add(time.ToString(@"hh\:mm"));
+
+        }
 
     }
 

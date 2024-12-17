@@ -14,6 +14,8 @@
     scrollbar-width: thin; /* For Firefox */
     -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
     position: relative;
+    background-color: #333; /* Background color for the picker */
+    color: white; /* Text color white */
 }
 
     /* Webkit browsers (Chrome, Safari) */
@@ -45,17 +47,15 @@
         padding: 10px;
         text-align: center;
         cursor: pointer;
-        color: black;
         transition: color 0.3s ease, opacity 0.3s ease;
     }
 
         .scrollable-picker div:hover {
-            background-color: #f0f0f0;
+            background-color: #555; /* Background color on hover */
         }
 
         .scrollable-picker div.selected {
             font-weight: bold;
-            color: #007bff;
+            background-color: #007bff; /* Background color for selected item */
+            color: white; /* Text color for selected item */
         }
-
-     
