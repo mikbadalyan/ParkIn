@@ -1,0 +1,175 @@
+﻿@inherits LayoutComponentBase
+@inject IJSRuntime JSRuntime
+<div class="main-layout">
+    <header id="header">
+        <div class="logo">
+            <a href="/">
+                <img id="logoImage" src="parkin_white.png" alt="Logo" />
+            </a>
+        </div>
+        <div class="header-links">
+            <a href="#" class="scroll-to-top">Home</a>
+            <a href="/" data-target="solutions" class="scroll-link">Solutions</a>
+            <a href="/" data-target="contact" class="scroll-link">Contact</a>
+            <a href="/faq">FAQ</a>
+            <a href="/signin">Sign in</a>
+            <a href="/signup" class="signup-link">Sign up</a>
+        </div>
+    </header>
+    <main>
+        <div class="faq-container">
+            <h3 class="faq-title">FAQ</h3>
+            <div class="faq-item">
+                <div class="faq-question">
+                    How to register? <span class="toggle-button">+</span>
+                </div>
+                <div class="faq-answer">
+                    To register, click on the 'Sign up' link at the top of the page and fill in the required details.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    How to reset my password? <span class="toggle-button">+</span>
+                </div>
+                <div class="faq-answer">
+                    To reset your password, click on the 'Forgot Password' link on the sign-in page and follow the instructions.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    How to contact support? <span class="toggle-button">+</span>
+                </div>
+                <div class="faq-answer">
+                    You can contact support by clicking on the 'Contact' link at the top of the page and filling out the contact form.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    How to find available parking spots? <span class="toggle-button">+</span>
+                </div>
+                <div class="faq-answer">
+                    To find available parking spots, use the 'Solutions' section on the homepage to view available spots.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    How to reserve a parking spot? <span class="toggle-button">+</span>
+                </div>
+                <div class="faq-answer">
+                    To reserve a parking spot, go to the 'Solutions' section and follow the instructions to reserve your spot in advance.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    How to use the QR code to open the barrier? <span class="toggle-button">+</span>
+                </div>
+                <div class="faq-answer">
+                    To use the QR code to open the barrier, simply show your QR code at the barrier scanner.
+                </div>
+            </div>
+        </div>
+        @Body
+    </main>
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize JavaScript once after the initial render
+            await JSRuntime.InvokeVoidAsync("initializeJavaScript");
+        }
+    }
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeListeners();
+        refreshPage();
+    });
+
+    function refreshPage() {
+        if (!sessionStorage.getItem('refreshed')) {
+            sessionStorage.setItem('refreshed', 'true');
+            location.reload();
+        } else {
+            sessionStorage.removeItem('refreshed');
+        }
+    }
+
+    // Existing functions...
+    function initializeListeners() {
+        const scrollToTopLink = document.querySelector('.scroll-to-top');
+        scrollToTopLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            scrollToTop();
+        });
+
+        const scrollLinks = document.querySelectorAll('.scroll-link');
+        scrollLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('data-target');
+                navigateAndScroll(e, targetId);
+            });
+        });
+
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 0) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', function () {
+                toggleAnswer(this);
+            });
+        });
+
+        const logoLink = document.querySelector('.logo a');
+        logoLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            changeLogo(e);
+        });
+    }
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function changeLogo(event) {
+        const logoImage = document.getElementById('logoImage');
+        if (logoImage.src.includes('parkin_white.png')) {
+            logoImage.src = 'crist.png';
+            logoImage.style.marginTop = '-8px'; // Decrease margin-top
+            logoImage.style.width = '97px'; // Adjust width
+            logoImage.style.height = 'auto'; // Maintain aspect ratio
+        } else {
+            logoImage.src = 'parkin_white.png';
+            logoImage.style.marginTop = '0px'; // Reset margin-top
+            logoImage.style.width = ''; // Reset width
+            logoImage.style.height = ''; // Reset height
+        }
+    }
+
+    function toggleAnswer(element) {
+        const answer = element.nextElementSibling;
+        const button = element.querySelector('.toggle-button');
+        if (answer.classList.contains('open')) {
+            answer.classList.remove('open');
+            button.textContent = '+';
+        } else {
+            answer.classList.add('open');
+            button.textContent = '-';
+        }
+    }
+
+    function navigateAndScroll(event, targetId) {
+        window.location.href = `/#${targetId}`;
+    }
+</script>

@@ -1,4 +1,8 @@
-﻿.auth-container {
+﻿html, body {
+   
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+.auth-container {
     position: absolute;
     top: 50%;
     left: 200px; /* 200px margin from the left */

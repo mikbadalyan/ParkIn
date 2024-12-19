@@ -1,0 +1,141 @@
+﻿html, body {
+    margin: 0; /* Remove any default margin */
+    font-family: 'Poppins', sans-serif; /* Apply Poppins font */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    height: 100%; /* Ensure the height is 100% */
+    background-color: #151a24; /* Set background color for the entire page */
+}
+
+.main-layout {
+    display: flex;
+    flex-direction: column;
+    background-color: #151a24; /* Changed background color */
+    overflow-x: hidden;
+    min-height: 100vh; /* Ensure the main layout takes full viewport height */
+}
+
+header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #151a24; /* Changed background color */
+    height: 80px; /* Increased height */
+    position: fixed; /* Make header fixed */
+    width: 100%; /* Full width */
+    top: 0; /* Stick to the top */
+    z-index: 1000; /* Ensure it is above other elements */
+    transition: box-shadow 0.3s ease; /* Smooth transition for shadow */
+}
+
+    header.scrolled {
+        box-shadow: 0 2px 5px rgba(255, 255, 255, 0.5); /* Add white shadow when scrolled */
+    }
+
+.logo {
+    margin-right: 20px;
+    margin-left: 200px; /* Move logo away from left edge */
+    margin-top: 10px; /* Added margin top to lower the logo */
+}
+
+    .logo img {
+        width: 100px; /* Adjust the width as needed */
+        height: auto; /* Maintain aspect ratio */
+    }
+
+.header-links {
+    margin-left: auto;
+    display: flex;
+    align-items: center; /* Align items to center */
+    gap: 42px; /* Space between links */
+    margin-right: 200px; /* Add 200px margin from right */
+    margin-top: 10px; /* Added margin top to lower the nav links */
+}
+
+    .header-links a {
+        text-decoration: none;
+        color: white; /* Updated link color */
+        padding: 10px;
+        font-weight: bold; /* Make links bold */
+        transition: color 0.3s ease; /* Smooth transition for color change */
+    }
+
+        .header-links a:hover {
+            color: #56b735; /* Change color on hover */
+        }
+
+    .header-links .active {
+        color: #56b735; /* Color for active link */
+    }
+
+    .header-links .signup-link {
+        background-color: white; /* White background color */
+        color: black; /* Black text color */
+        border-radius: 50px; /* More rounded corners */
+        padding: 10px 20px; /* Padding for the rectangle */
+    }
+
+        .header-links .signup-link:hover {
+            background-color: #f0f0f0; /* Slightly darker background on hover */
+        }
+
+main {
+    flex-grow: 1;
+    padding: 100px 20px 20px 20px; /* Add top padding to account for fixed header */
+    background-color: #151a24; /* Changed background color */
+}
+
+#logoImage {
+    margin-top: 0px; /* Default margin-top */
+}
+
+.faq-container {
+    text-align: center;
+    color: white;
+}
+
+.faq-title {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.faq-item {
+    margin-bottom: 10px;
+}
+
+.faq-question {
+    cursor: pointer;
+    display: flex;
+    justify-content: center; /* Center the question text */
+    align-items: center;
+    padding: 10px;
+    background-color: #1e2430;
+    border: 1px solid #333;
+    border-radius: 5px;
+    position: relative; /* Add relative positioning */
+}
+
+    .faq-question .toggle-button {
+        position: absolute; /* Position the toggle button absolutely */
+        right: 10px; /* Adjust the position as needed */
+    }
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 10px;
+    background-color: #2a2f3a;
+    border: 1px solid #333;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+    .faq-answer.open {
+        max-height: 200px; /* Adjust based on content */
+        padding: 10px;
+    }
+
+.toggle-button {
+    font-size: 1.5em;
+    font-weight: bold;
+}

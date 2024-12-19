@@ -1,6 +1,27 @@
-﻿.scrollable-picker-container {
+﻿.reservation-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: auto;
+    color: #333;
+}
+
+h3 {
+    text-align: center;
+    color: #28a745; /* Changed to green */
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.scrollable-picker-container {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 .scrollable-picker {
@@ -8,54 +29,89 @@
     flex-direction: column;
     align-items: center;
     overflow-y: scroll;
-    height: 300px; /* Increase the height to make the scrollbar longer */
+    height: 300px;
     width: 100px;
     margin: 10px;
-    scrollbar-width: thin; /* For Firefox */
-    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
-    position: relative;
-    background-color: #333; /* Background color for the picker */
-    color: white; /* Text color white */
-}
-
-    /* Webkit browsers (Chrome, Safari) */
-    .scrollable-picker::-webkit-scrollbar {
-        width: 8px; /* Set the width of the scrollbar */
-    }
-
-    .scrollable-picker::-webkit-scrollbar-track {
-        background: #f1f1f1; /* Background of the scrollbar track */
-        border-radius: 10px; /* Rounded corners for the track */
-    }
-
-    .scrollable-picker::-webkit-scrollbar-thumb {
-        background: #888; /* Color of the scrollbar thumb */
-        border-radius: 10px; /* Rounded corners for the thumb */
-    }
-
-        .scrollable-picker::-webkit-scrollbar-thumb:hover {
-            background: #555; /* Color of the scrollbar thumb on hover */
-        }
-
-/* Firefox */
-.scrollable-picker {
-    scrollbar-color: #888 #f1f1f1;
     scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    background-color: #333;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-    .scrollable-picker div {
-        padding: 10px;
-        text-align: center;
-        cursor: pointer;
-        transition: color 0.3s ease, opacity 0.3s ease;
+.picker-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #28a745; /* Changed to green */
+}
+
+.scrollable-picker div {
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+    .scrollable-picker div:hover {
+        background-color: #555;
     }
 
-        .scrollable-picker div:hover {
-            background-color: #555; /* Background color on hover */
-        }
+    .scrollable-picker div.selected {
+        font-weight: bold;
+        background-color: #28a745; /* Changed to green */
+        color: white;
+    }
 
-        .scrollable-picker div.selected {
-            font-weight: bold;
-            background-color: #007bff; /* Background color for selected item */
-            color: white; /* Text color for selected item */
-        }
+.scrollable-picker::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-picker::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scrollable-picker::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+    .scrollable-picker::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+.selected-date-time {
+    background-color: #28a745; /* Green background */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    text-align: center;
+    color: white; /* White text */
+}
+
+    .selected-date-time p {
+        margin: 0;
+        color: white; /* White text */
+    }
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+button[type="submit"] {
+    background-color: #28a745; /* Green color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    button[type="submit"]:hover {
+        background-color: #218838; /* Changed to darker green */
+    }

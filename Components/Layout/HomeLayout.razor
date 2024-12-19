@@ -1,16 +1,16 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="main-layout">
-    <header>
+    <header id="header">
         <div class="logo">
-            <a href="/">
-                <img src="parkin_white.png" alt="Logo" />
+            <a href="/" onclick="changeLogo(event)">
+                <img id="logoImage" src="parkin_white.png" alt="Logo" />
             </a>
         </div>
         <div class="header-links">
-            <a href="/">Home</a>
-            <a href="/solutions">Solutions</a>
-            <a href="/contact">Contact</a>
+            <a href="#" onclick="scrollToTop()">Home</a>
+            <a href="#solutions" class="scroll-link">Solutions</a>
+            <a href="#contact" class="scroll-link">Contact</a>
             <a href="/faq">FAQ</a>
             <a href="/signin">Sign in</a>
             <a href="/signup" class="signup-link">Sign up</a>
@@ -23,6 +23,117 @@
                 <span class="easier">EASIER</span><span class="than-before">THAN BEFORE</span>
             </div>
         </div>
+        <div class="car-images">
+            <img src="niva.png" alt="Niva" class="car-image-left" />
+            <img src="bmw.png" alt="BMW" class="car-image-center" />
+            <img src="wr.png" alt="WR" class="car-image-right" />
+        </div>
+        <div class="line-below-images"></div> <!-- Added line below car images -->
+        <div id="solutions" class="solutions-section">
+            <div class="solutions-text">Solutions</div>
+            <div class="solution-images">
+                <div class="solution-image">
+                    <img src="cinematic-style-mall.jpg" alt="Cinematic Style Mall" />
+                </div>
+                <div class="solution-image">
+                    <img src="close-up-man-driving-car.jpg" alt="Close Up Man Driving Car" />
+                </div>
+                <div class="solution-image">
+                    <img src="person-scanning-qr-code.jpg" alt="Person Scanning QR Code" />
+                </div>
+            </div>
+            <div class="image-captions">
+                <p class="image-caption view-parking-spots">View available parking spots</p>
+                <p class="image-caption reser">Reserve your spot in advance</p>
+                <p class="image-caption barrier">Open the barrier instantly by showing your own QR Code</p>
+            </div>
+        </div>
+        <div class="line-below-images"></div>
+
+        <div id="contact" class="contact-section">
+            <div class="contact-text">Contact</div>
+            <div class="contact-content">
+                <div class="contact-form">
+                    <div class="form-title">Get in Touch</div>
+                    <input type="text" placeholder="Your Name" />
+                    <input type="email" placeholder="Your Email" />
+                    <input type="text" placeholder="Message" />
+                    <button type="submit">Send</button>
+                </div>
+                <div class="contact-map" onclick="openMap()">
+                    <img src="map.png" alt="Map" />
+                    <div class="map-overlay">Open the map</div>
+                </div>
+            </div>
+            <div class="contact-icons">
+                <div class="contact-icon">
+                    <img src="gps.png" alt="Address Icon" />
+                    <div>Paruyr Sevak 1</div>
+                </div>
+                <div class="contact-icon">
+                    <img src="phone-call.png" alt="Phone Icon" />
+                    <div>+374 (44)488334</div>
+                </div>
+                <div class="contact-icon">
+                    <img src="email (2).png" alt="Mail Icon" />
+                    <div>info@parkin.am</div>
+                </div>
+            </div>
+        </div>
+        <div class="line-below-images"></div>
+        <p class="copyright">Copyright 2024-2025 All Rights Reserved.</p>
         @Body
     </main>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const links = document.querySelectorAll('.scroll-link');
+        links.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80, // Adjust for fixed header height
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 0) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    });
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openMap() {
+        window.open('https://yandex.com/maps/-/CHETBOlH', '_blank');
+    }
+
+    function changeLogo(event) {
+        event.preventDefault();
+        const logoImage = document.getElementById('logoImage');
+        if (logoImage.src.includes('parkin_white.png')) {
+            logoImage.src = 'crist.png';
+            logoImage.style.marginTop = '-8px'; // Decrease margin-top
+            logoImage.style.width = '97px'; // Adjust width
+            logoImage.style.height = 'auto'; // Maintain aspect ratio
+        } else {
+            logoImage.src = 'parkin_white.png';
+            logoImage.style.marginTop = '0px'; // Reset margin-top
+            logoImage.style.width = ''; // Reset width
+            logoImage.style.height = ''; // Reset height
+        }
+    }
+</script>

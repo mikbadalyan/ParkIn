@@ -7,6 +7,7 @@
 @inject TokenService TokenService
 @inject ILogger<Account> Logger
 @inject IWebHostEnvironment WebHostEnvironment
+@inject EmailService EmailService
 @layout Components.Layout.Accountlayout
 @rendermode InteractiveServer
 <PageTitle>User Account</PageTitle>
@@ -20,39 +21,67 @@ else
     <div class="account-container text-white">
         <div class="user-info-container">
             <div class="user-info">
-                <h2>Welcome, @user.FirstName @user.LastName</h2>
-                <p><strong>Email:</strong> @user.Email</p>
-                <p><strong>Username:</strong> @user.Username</p>
-                <p><strong>Phone Number:</strong> @user.PhoneNumber</p>
-                <p><strong>PIN:</strong> @user.PIN</p>
+                <img src="avatar.jpg" alt="User Avatar" class="avatar" />
+                <h2>@user.FirstName @user.LastName</h2>
+                <p>
+                    <strong><img src="email (2).png" alt="Mail Icon" class="icon" /></strong>
+                    @if (isEditingEmail)
+                    {
+                        <InputText @bind-Value="newEmail" class="form-control input-inline" />
+                        <button class="btn btn-green btn-sm" @onclick="SendVerificationCode" style="background-color: #56b735; color: white;">Save</button>
+                        <button class="btn btn-sm" @onclick="CancelEditEmail" style="background-color: #ee6c4d; color: white;">Cancel</button>
+                    }
+                    else
+                    {
+                        @user.Email
+                        <img src="edit-button.png" alt="Edit Icon" class="icon edit-icon" @onclick="EditEmail" />
+                    }
+                </p>
+                <p>
+                    <strong><img src="phone-call.png" alt="Phone Icon" class="icon" /></strong>
+                    @if (isEditingPhone)
+                    {
+                        <InputText @bind-Value="user.PhoneNumber" class="form-control input-inline" />
+                        <button class="btn btn-green btn-sm" @onclick="SavePhone" style="background-color: #56b735; color: white;">Save</button>
+                        <button class="btn btn-sm" @onclick="CancelEditPhone" style="background-color: #ee6c4d; color: white;">Cancel</button>
+                    }
+                    else
+                    {
+                        @user.PhoneNumber
+                        <img src="edit-button.png" alt="Edit Icon" class="icon edit-icon" @onclick="() => isEditingPhone = true" />
+                    }
+                </p>
                 @if (!string.IsNullOrEmpty(user.CarBrand))
                 {
-                    <p><strong>Car Brand:</strong> @user.CarBrand</p>
+                    <p><strong><img src="car.png" alt="Car Icon" class="icon" /></strong> @user.CarBrand</p>
+                }
+                else
+                {
+                    <p><strong><img src="car.png" alt="Car Icon" class="icon" />Add new car</strong></p>
                 }
                 @if (!string.IsNullOrEmpty(user.PlateNumber))
                 {
-                    <p><strong>Plate Number:</strong> @user.PlateNumber</p>
+                    <p><strong><img src="license-plate.png" alt="Plate Icon" class="icon" /> </strong> @user.PlateNumber</p>
                 }
+                <button class="btn btn-success" @onclick="NavigateToReservation" style="background-color: #56b735; color: white;">Make a Reservation</button>
             </div>
 
             <div class="qr-code-container">
                 @if (!string.IsNullOrEmpty(qrCodePng))
                 {
                     <img src="data:image/png;base64,@qrCodePng" alt="QR Code" class="qr-code" />
+                    <p class="qrrr">Scan this QR code to open the barrier</p>
                 }
-                <p>Please, scan QR code at the boom barrier of UFAR</p>
             </div>
         </div>
-
-        <div class="car-details-form">
-            <h3>Add Car Details</h3>
+        <div class="car-details-form" id="car-details-form" style="width: 200px; margin-left: 200px;">
+            <h3>Add or Edit Car Details</h3>
             <EditForm Model="@carDetails" OnValidSubmit="AddCarDetails">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
                 <div class="form-group">
-                    <label for="carBrand">Car Brand</label>
-                    <InputSelect id="carBrand" @bind-Value="carDetails.CarBrand" class="form-control">
+                    <InputSelect id="carBrand" @bind-Value="carDetails.CarBrand" class="form-control input-gap" style="width: 100%;" placeholder="Car Brand">
                         <option value="">Select Car Brand</option>
                         <option value="Toyota">Toyota</option>
                         <option value="BMW">BMW</option>
@@ -64,32 +93,134 @@ else
                 </div>
 
                 <div class="form-group">
-                    <label for="plateNumber">Plate Number</label>
-                    <InputText id="plateNumber" @bind-Value="carDetails.PlateNumber" class="form-control" />
+                    <InputText id="plateNumber" @bind-Value="carDetails.PlateNumber" class="form-control input-gap" style="width: 100%;" placeholder="Plate Number" />
                     <ValidationMessage For="@(() => carDetails.PlateNumber)" />
                 </div>
 
-                <button type="submit" class="btn btn-primary">Add New Car</button>
+                <button type="submit" class="btn btn-green" style="background-color: #56b735; color: white;">Submit</button>
             </EditForm>
-
-            @if (carDetailsAdded)
-            {
-                <div class="car-details">
-                    <h3>Car Details</h3>
-                    <p><strong>Car Brand:</strong> @carDetails.CarBrand</p>
-                    <p><strong>Plate Number:</strong> @carDetails.PlateNumber</p>
-                </div>
-            }
         </div>
 
-        <nav>
-            <ul>
-                <li><a @onclick="NavigateToReservation">Make a Reservation</a></li>
-            </ul>
-        </nav>
+        
     </div>
 }
+<style>
+    body {
+        color: white;
+    }
 
+    .text-white {
+        color: white;
+    }
+
+    .qr-code {
+        width: 250px; /* Adjust the width as needed */
+        height: 250px; /* Adjust the height as needed */
+    }
+
+    .account-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-info-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .user-info {
+        flex: 1;
+        margin-left: 195px; /* Add margin-left to make it symmetric with the logo */
+    }
+
+    .qr-code-container {
+        margin-left: 20px;
+        margin-right: 190px; /* Add margin-right to make it symmetric */
+    }
+
+    .car-details-form {
+        margin-top: 20px;
+    }
+
+        .car-details-form .form-group .form-control {
+            width: 100px !important; /* Set a very small fixed width for the input fields */
+        }
+
+    .avatar {
+        width: 100px; /* Adjust the width as needed */
+        height: 100px; /* Adjust the height as needed */
+        border-radius: 50%; /* Make the image circular */
+        margin-right: 10px; /* Add some space between the image and the text */
+        vertical-align: middle; /* Align the image vertically with the text */
+    }
+
+    .icon {
+        width: 16px; /* Adjust the width as needed */
+        height: 16px; /* Adjust the height as needed */
+        margin-right: 5px; /* Add some space between the icon and the text */
+        vertical-align: middle; /* Align the icon vertically with the text */
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100px; /* Change the width to 100% */
+    }
+
+    .btn-green {
+        background-color: #56b735; /* Green color */
+        color: white;
+    }
+
+    .qrrr {
+        width: 250px;
+        text-align: center;
+    }
+
+    ::placeholder {
+        color: grey;
+    }
+
+    .input-gap {
+        margin-bottom: 15px;
+    }
+
+    .input-inline {
+        display: inline-block;
+        width: auto;
+        margin-right: 10px;
+    }
+
+    .edit-icon {
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+</style>
+
+<!-- Modal for verification code -->
+@if (showVerificationModal)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enter Verification Code</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <InputText id="verificationCode" @bind-Value="verificationCode" class="form-control" placeholder="Verification Code" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick="VerifyCode">Verify</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 @code {
     [Parameter]
     public string? token { get; set; }
@@ -98,13 +229,26 @@ else
     private CarDetailsModel carDetails = new CarDetailsModel();
     private bool carDetailsAdded = false;
     private string? qrCodePng;  // QR code in Base64 to display
+    private bool isEditingEmail = false;
+    private bool isEditingPhone = false;
+    private string newEmail = string.Empty;
+    private bool showVerificationModal = false;
+    private string verificationCode = string.Empty;
+    private string generatedVerificationCode = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        if (string.IsNullOrEmpty(token))
+        {
+            Logger.LogWarning("Token is null or empty");
+            NavigationManager.NavigateTo("/signup");
+            return;
+        }
+
         try
         {
             Logger.LogInformation("Decrypting token: {Token}", token);
-            var userId = int.Parse(TokenService.DecryptToken(token));
+            var userId = int.Parse(TokenService.DecryptToken(token!));
             Logger.LogInformation("Decrypted user ID: {UserId}", userId);
             user = await DbContext.Usersigns.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
@@ -174,6 +318,72 @@ else
     private void NavigateToReservation()
     {
         NavigationManager.NavigateTo($"/reservation/{token}");
+    }
+
+    private async Task SendVerificationCode()
+    {
+        if (user != null)
+        {
+            generatedVerificationCode = GenerateVerificationCode();
+            await EmailService.SendEmailAsync(newEmail, user.FirstName, user.LastName, user.Username, string.Empty, generatedVerificationCode);
+            Logger.LogInformation("Verification email sent to {Email}", newEmail);
+            showVerificationModal = true;
+        }
+    }
+
+    private async Task VerifyCode()
+    {
+        if (verificationCode == generatedVerificationCode)
+        {
+            if (user != null)
+            {
+                user.Email = newEmail;
+                DbContext.Usersigns.Update(user);
+                await DbContext.SaveChangesAsync();
+                isEditingEmail = false;
+                showVerificationModal = false;
+            }
+        }
+        else
+        {
+            Logger.LogWarning("Invalid verification code entered: {VerificationCode}", verificationCode);
+        }
+    }
+
+    private void CloseModal()
+    {
+        showVerificationModal = false;
+    }
+
+    private async Task SavePhone()
+    {
+        if (user != null)
+        {
+            DbContext.Usersigns.Update(user);
+            await DbContext.SaveChangesAsync();
+            isEditingPhone = false;
+        }
+    }
+
+    private void EditEmail()
+    {
+        newEmail = user?.Email ?? string.Empty;
+        isEditingEmail = true;
+    }
+
+    private void CancelEditEmail()
+    {
+        isEditingEmail = false;
+    }
+
+    private void CancelEditPhone()
+    {
+        isEditingPhone = false;
+    }
+
+    private string GenerateVerificationCode()
+    {
+        return new Random().Next(100000, 999999).ToString();
     }
 
     private class CarDetailsModel

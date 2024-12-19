@@ -7,8 +7,8 @@
 }
 
 .qr-code {
-    width: 200px; /* Adjust the width as needed */
-    height: 200px; /* Adjust the height as needed */
+    width: 250px; /* Adjust the width as needed */
+    height: 250px; /* Adjust the height as needed */
 }
 
 .account-container {
@@ -38,5 +38,33 @@
 }
 
     .car-details-form .form-group .form-control {
-        width: 50px !important; /* Set a very small fixed width for the input fields */
+        width: 100px !important; /* Set a very small fixed width for the input fields */
     }
+.avatar {
+    width: 100px; /* Adjust the width as needed */
+    height: 100px; /* Adjust the height as needed */
+    border-radius: 50%; /* Make the image circular */
+    margin-right: 10px; /* Add some space between the image and the text */
+    vertical-align: middle; /* Align the image vertically with the text */
+}
+.icon {
+    width: 16px; /* Adjust the width as needed */
+    height: 16px; /* Adjust the height as needed */
+    margin-right: 5px; /* Add some space between the icon and the text */
+    vertical-align: middle; /* Align the icon vertically with the text */
+}
+
+.form-group input,
+.form-group select {
+    width: 100px; /* Change the width to 100% */
+}
+
+.btn-green {
+    background-color: #56b735; /* Green color */
+    color: white;
+    
+}
+.qrrr{
+    width:250px;
+    text-align:center;
+}

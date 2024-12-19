@@ -1,15 +1,16 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
 
 <div class="main-layout">
     <header>
         <div class="logo">
-            <a href="#">
+            <a href="/">
                 <img src="parkin_white.png" alt="Logo" />
             </a>
         </div>
         <div class="header-links">
-            <a href="@GetAccountUrl()">Home</a> <!-- Updated link to include token -->
-            <a href="/reserve">Reserve</a>
+            <a href="/">Home</a>
             <a href="/faq">FAQ</a>
             <div class="account-dropdown">
                 <img src="avatar.jpg" alt="Account" class="account-image" />
@@ -20,8 +21,8 @@
                     <a href="/settings">
                         <img src="settings.png" alt="Settings" class="dropdown-icon" /> Settings
                     </a>
-                    <a href="/help">
-                        <img src="help.png" alt="Help" class="dropdown-icon" /> Help
+                    <a href="/" id="logout-link">
+                        <img src="logout (1).png" alt="Log out" class="dropdown-icon" /> Log out
                     </a>
                 </div>
             </div>
@@ -40,6 +41,29 @@
 
     private string GetAccountUrl()
     {
-        return $"/account/{Token}";
+        return string.IsNullOrEmpty(Token) ? "/account" : $"/account/{Token}";
     }
+
+    private void Logout()
+    {
+        // Perform any necessary logout operations here
+        NavigationManager.NavigateTo("/", true);
+    }
+
+    private void NavigateToReservation()
+    {
+        NavigationManager.NavigateTo($"/reservation/{Token}");
+    }
+
+   
 }
+
+<script>
+    
+
+    function logout() {
+        // Clear the browser history to prevent going back to the account page
+        window.location.replace('/');
+    }
+
+</script>

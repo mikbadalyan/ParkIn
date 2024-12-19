@@ -148,3 +148,7 @@ main {
         color: white;
         font-weight: bold; /* Make THAN BEFORE bold */
     }
+
+.header-links .active {
+    color: #56b735; /* Color for active link */
+}

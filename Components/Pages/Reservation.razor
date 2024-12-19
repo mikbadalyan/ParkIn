@@ -10,63 +10,191 @@
 
 <PageTitle>Reservation</PageTitle>
 
-<h3>Make a Reservation</h3>
+<div class="reservation-container">
+    <h3>RESERVE A SPOT | AVAILABLE TIMETABLE</h3>
 
-@if (!string.IsNullOrEmpty(token))
+    @if (!string.IsNullOrEmpty(token))
 
-{
-    <p>Token: @token</p> <!-- Display the token -->
-}
+    {
+        <p></p> <!-- Display the token -->
+    }
 
-else
+    else
 
-{
-    <p>No token provided.</p>
-}
+    {
+        <p>No token provided.</p>
+    }
 
-<EditForm Model="@reservationModel" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+    <EditForm Model="@reservationModel" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    <div class="form-group">
-        <label for="date">Select Date and Time</label>
-        <div class="scrollable-picker-container">
-            <div class="scrollable-picker">
-                @foreach (var date in AvailableDates)
-                {
-                    <div class="@GetDateClass(date)" @onclick="() => SelectDate(date)">@date.ToString("MMM dd")</div>
-                }
+        <div class="form-group">
+            <div class="scrollable-picker-container">
+                <div class="scrollable-picker">
+                    <div class="picker-header">Date</div>
+                    @foreach (var date in AvailableDates)
+
+                    {
+                        <div class="@GetDateClass(date)" @onclick="() => SelectDate(date)">@date.ToString("MMM dd")</div>
+                    }
+                </div>
+                <div class="scrollable-picker">
+                    <div class="picker-header">Entrance</div>
+                    @foreach (var time in AvailableTimes)
+
+                    {
+                        <div class="@GetTimeClass(time, true)" @onclick="() => SelectTime(time)">@time</div>
+                    }
+                </div>
+                <div class="scrollable-picker">
+                    <div class="picker-header">Exit</div>
+                    @foreach (var time in AvailableEndTimes)
+
+                    {
+                        <div class="@GetTimeClass(time, false)" @onclick="() => SelectEndTime(time)">@time</div>
+                    }
+                </div>
             </div>
-            <div class="scrollable-picker">
-                @foreach (var time in AvailableTimes)
-                {
-                    <div class="@GetTimeClass(time, true)" @onclick="() => SelectTime(time)">@time</div>
-                }
-            </div>
-            <div class="scrollable-picker">
-                @foreach (var time in AvailableEndTimes)
-                {
-                    <div class="@GetTimeClass(time, false)" @onclick="() => SelectEndTime(time)">@time</div>
-                }
-            </div>
+            <ValidationMessage For="@(() => reservationModel.Date)" />
+            <ValidationMessage For="@(() => reservationModel.Time)" />
+            <ValidationMessage For="@(() => reservationModel.EndTime)" />
         </div>
-        <ValidationMessage For="@(() => reservationModel.Date)" />
-        <ValidationMessage For="@(() => reservationModel.Time)" />
-        <ValidationMessage For="@(() => reservationModel.EndTime)" />
-    </div>
 
-    <button type="submit" class="btn btn-primary">Reserve</button>
-</EditForm>
+        <div class="button-container">
+            <button type="submit" class="btn btn-primary">Reserve</button>
+        </div>
+    </EditForm>
 
-@if (reservationModel.Date != default && !string.IsNullOrEmpty(reservationModel.Time))
+    @if (reservationModel.Date != default && !string.IsNullOrEmpty(reservationModel.Time))
 
-{
-    <div class="selected-date-time">
-        <p>Selected Date: @reservationModel.Date.ToString("MMMM dd, yyyy")</p>
-        <p>Selected Time: @reservationModel.Time</p>
-    </div>
-}
+    {
+        <div class="selected-date-time">
+            <p>Selected Date: @reservationModel.Date.ToString("MMMM dd, yyyy")</p>
+            <p>Selected Time: @reservationModel.Time</p>
+        </div>
+    }
+</div>
+<style>
+    .reservation-container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: auto;
+        color: #333;
+    }
 
+    h3 {
+        text-align: center;
+        color: #28a745; /* Changed to green */
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .scrollable-picker-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .scrollable-picker {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: scroll;
+        height: 300px;
+        width: 100px;
+        margin: 10px;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+        background-color: #333;
+        color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .picker-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #28a745; /* Changed to green */
+    }
+
+    .scrollable-picker div {
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+        .scrollable-picker div:hover {
+            background-color: #555;
+        }
+
+        .scrollable-picker div.selected {
+            font-weight: bold;
+            background-color: #28a745; /* Changed to green */
+            color: white;
+        }
+
+    .scrollable-picker::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .scrollable-picker::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .scrollable-picker::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+
+        .scrollable-picker::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    .selected-date-time {
+        background-color: #28a745; /* Green background */
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 20px;
+        text-align: center;
+        color: white; /* White text */
+    }
+
+        .selected-date-time p {
+            margin: 0;
+            color: white; /* White text */
+        }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    button[type="submit"] {
+        background-color: #28a745; /* Green color */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        button[type="submit"]:hover {
+            background-color: #218838; /* Changed to darker green */
+        }
+
+</style>
 @code {
     [Parameter]
 
